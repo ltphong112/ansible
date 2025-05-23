@@ -1,0 +1,17 @@
+---
+- name: Create user & update password
+  hosts: all
+
+  tasks:
+    - name: Create user
+      user:
+        name: george
+        home: /home/george
+        shell: /bin/bash
+    
+    - name: Update password
+      user:
+        name: george
+        update_password: always
+        password: "{{ newpassword|password_hash('sha512') }}"
+    # command to run: ansible-playbook adduser.yaml --extra-vars newpassword P@ssw0rd

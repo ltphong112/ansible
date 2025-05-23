@@ -1,0 +1,61 @@
+---
+- name: Show Firewalld Rules
+  hosts: all # Ensure 'servers' group is defined in your inventory
+  become: yes    # Requires root privileges to query firewalld
+  gather_facts: no # Not strictly necessary for this task
+
+  tasks:
+    - name: Check if firewalld is installed and active
+      ansible.builtin.systemd:
+        name: firewalld
+        state: started
+      register: firewalld_status
+      ignore_errors: yes # Continue even if firewalld isn't running (though it should be for rules to exist)
+      # This task checks the status of the firewalld service.
+      # 'register' saves the output of the task to a variable.
+      # 'ignore_errors: yes' allows the playbook to proceed even if firewalld is not found or not running,
+      # which is useful if you want to see a message rather than fail the playbook immediately.
+
+    - name: Display message if firewalld is not running
+      ansible.builtin.debug:
+        msg: "Firewalld service is not running on {{ inventory_hostname }}. No rules to display."
+      when: firewalld_status.status.ActiveState != 'active'
+      # This task uses the 'debug' module to print a message if firewalld is not active.
+
+    - name: Get active (runtime) firewalld rules
+      ansible.builtin.command: firewall-cmd --list-all
+      register: active_rules_output
+      when: firewalld_status.status.ActiveState == 'active'
+      # This task executes the 'firewall-cmd --list-all' command to get the current active rules.
+      # It only runs if firewalld is active.
+
+    - name: Display active firewalld rules
+      ansible.builtin.debug:
+        msg: |
+          --- Active Firewalld Rules for {{ inventory_hostname }} ---
+          {% for line in active_rules_output.stdout_lines %}
+          {{ line }}
+          {% endfor %}
+          ----------------------------------------------------
+      when: firewalld_status.status.ActiveState == 'active'
+      # This task uses 'debug' to print each line of the standard output.
+      # Using 'stdout_lines' often provides clearer formatting for multi-line output.
+
+    - name: Get permanent firewalld rules
+      ansible.builtin.command: firewall-cmd --list-all --permanent
+      register: permanent_rules_output
+      when: firewalld_status.status.ActiveState == 'active'
+      # This task executes the 'firewall-cmd --list-all --permanent' command to get the permanent rules.
+      # It only runs if firewalld is active.
+
+    - name: Display permanent firewalld rules
+      ansible.builtin.debug:
+        msg: |
+          --- Permanent Firewalld Rules for {{ inventory_hostname }} ---
+          {% for line in permanent_rules_output.stdout_lines %}
+          {{ line }}
+          {% endfor %}
+          ------------------------------------------------------
+      when: firewalld_status.status.ActiveState == 'active'
+      # This task uses 'debug' to print each line of the standard output for permanent rules.
+

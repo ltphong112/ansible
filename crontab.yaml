@@ -1,0 +1,25 @@
+---
+- name: Create a cron job
+  hosts: all
+
+  tasks:
+    - name: Ensure cronie installed
+      dnf:
+        name: cronie
+        state: present
+
+    - name: Start cronie
+      service:
+        name: crond
+        state: started
+
+    - name: First crontab
+      cron:
+        name: Schedule to run script every 10 minutes
+        minute: "0"
+        hour: "10"
+        day: "*"
+        month: "*"
+        weekday: "4"
+        user: root
+        job: "/home/subzero/projects/shell.sh"

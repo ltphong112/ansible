@@ -1,0 +1,31 @@
+---
+- name: Create directory
+  hosts: all
+
+  tasks:
+    - name: Create directory
+      file:
+        path: /tmp/subzero
+        owner: subzero
+        group: subzero
+        mode: 770
+        state: directory
+
+    - name: Create file
+      file:
+        path: /tmp/subzero/jerry
+        state: touch
+
+    - name: State new file
+      stat:
+        path: /tmp/subzero/jerry
+      register: jf
+
+    - name: Show file
+      debug:
+        msg: File status and attributes {{ jf }}
+
+    - name: Remove
+      file:
+        path: /tmp/subzero/jerry
+        state: absent

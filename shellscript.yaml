@@ -1,0 +1,8 @@
+---
+- name: Shell script
+  hosts: all
+
+  tasks:
+    - name: Run shellscript
+      shell: "/home/subzero/projects/shell.sh"
+      

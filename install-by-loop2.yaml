@@ -1,0 +1,11 @@
+---
+- name: Install packages via loop
+  hosts: all
+  vars: 
+    packages: [telnet, tracert]
+
+  tasks:
+    - name: Install packages
+      dnf:
+        name: '{{ packages }}'
+        state: present

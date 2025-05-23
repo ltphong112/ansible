@@ -1,0 +1,14 @@
+---
+- name: Installing & Starting Apache2
+  hosts: all
+
+  tasks:
+    - name: Installing Apache
+      dnf:
+        name: httpd
+        state: present
+      
+    - name: Starting Apache2
+      service:
+        name: httpd
+        state: started

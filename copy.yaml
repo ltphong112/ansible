@@ -1,0 +1,13 @@
+---
+- name: Copy file remotely
+  hosts: all
+
+  tasks:
+    - name: Copy File
+      become: true
+      copy:
+        src: /home/subzero/.config/starship.toml
+        dest: /tmp/
+        owner: root
+        group: root
+        mode: 0644

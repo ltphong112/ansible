@@ -1,0 +1,9 @@
+---
+- name: File Permission
+  hosts: all
+
+  tasks:
+  - name: Change File Permission
+    file:
+      path: /tmp/starship.toml
+      mode: a+w

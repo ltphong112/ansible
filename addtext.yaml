@@ -1,0 +1,15 @@
+---
+- name: Create file and add content
+  hosts: all
+
+  tasks:
+    - name: Create new file
+      file:
+        path: /tmp/george
+        state: touch
+
+    - name: Add text to the file
+      blockinfile:
+        path: /tmp/george
+        block: Test
+
